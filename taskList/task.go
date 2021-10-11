@@ -77,6 +77,7 @@ func (tl *TaskList) GetAll() ([]Task, error) {
 
 }
 
-func (tl *TaskList) Delete(id int) {
-	tl.TasksDb.QueryRow("DELETE FROM tasks WHERE task_id = $1", id)
+func (tl *TaskList) Delete(id int) error {
+	_, err := tl.TasksDb.Exec("DELETE FROM tasks WHERE task_id = $1", id)
+	return err
 }

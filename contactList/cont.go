@@ -28,7 +28,7 @@ func (cl *ContactList) Create(con Contact) error {
 }
 
 func (cl *ContactList) Update(con Contact) error {
-	res, err := cl.ContactsDb.Exec(`UPDATE tasks 
+	res, err := cl.ContactsDb.Exec(`UPDATE contacts 
 			SET first_name = $1, last_name = $2, phone = $3, email = $4
 			WHERE contact_id = $5
 			`, con.FirstName, con.LastName, con.Phone, con.Phone, con.Id)
@@ -38,7 +38,7 @@ func (cl *ContactList) Update(con Contact) error {
 	}
 
 	if num, _ := res.RowsAffected(); num == 0 {
-		return fmt.Errorf("task %d not exists", con.Id)
+		return fmt.Errorf("contact %d not exists", con.Id)
 	}
 	return nil
 }
@@ -50,7 +50,7 @@ func (cl *ContactList) Get(id int) (Contact, error) {
 	row.Scan(&contact.Id, &contact.FirstName, &contact.LastName, &contact.Phone, &contact.Email)
 
 	if contact == emptyContact {
-		return Contact{}, fmt.Errorf("task %d not exists", id)
+		return Contact{}, fmt.Errorf("contact %d not exists", id)
 	}
 
 	return contact, nil
@@ -73,6 +73,7 @@ func (cl *ContactList) GetAll() ([]Contact, error) {
 	return result, nil
 }
 
-func (cl *ContactList) Delete(id int) {
-	cl.ContactsDb.QueryRow("DELETE FROM contacts WHERE contact_id = $1", id)
+func (cl *ContactList) Delete(id int) error {
+	_, err := cl.ContactsDb.Exec("DELETE FROM contacts WHERE contact_id = $1", id)
+	return err
 }
